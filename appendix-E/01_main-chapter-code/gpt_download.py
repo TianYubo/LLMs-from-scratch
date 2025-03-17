@@ -14,7 +14,7 @@ import tensorflow as tf
 from tqdm import tqdm
 
 
-def download_and_load_gpt2(model_size, models_dir):
+def download_and_load_gpt2(model_size, models_dir, local_only=False):
     # Validate model size
     allowed_sizes = ("124M", "355M", "774M", "1558M")
     if model_size not in allowed_sizes:
@@ -31,12 +31,13 @@ def download_and_load_gpt2(model_size, models_dir):
     ]
 
     # Download files
-    os.makedirs(model_dir, exist_ok=True)
-    for filename in filenames:
-        file_url = os.path.join(base_url, model_size, filename)
-        backup_url = os.path.join(backup_base_url, model_size, filename)
-        file_path = os.path.join(model_dir, filename)
-        download_file(file_url, file_path, backup_url)
+    if not local_only:
+        os.makedirs(model_dir, exist_ok=True)
+        for filename in filenames:
+            file_url = os.path.join(base_url, model_size, filename)
+            backup_url = os.path.join(backup_base_url, model_size, filename)
+            file_path = os.path.join(model_dir, filename)
+            download_file(file_url, file_path, backup_url)
 
     # Load settings and params
     tf_ckpt_path = tf.train.latest_checkpoint(model_dir)
